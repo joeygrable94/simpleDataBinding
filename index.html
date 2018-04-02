@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html  lang="en-us">
+<head>
+
+	<!-- meta -->
+	<title>Simple Data Binding</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="author" content="Joey Grable">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta name="copyright" content="copyright Joey Grable">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- responsive -->
+	<meta name="robots" content="noindex"><!-- no SEO -->
+
+	<!-- css 
+	<link rel="stylesheet" type="text/css" href="./">
+	-->
+
+</head>
+<body>
+
+	<input type="text" class="aText"> +
+	<input type="text" class="bText"> =
+	<input type="text" class="cText" readonly>
+	
+	<hr>
+	
+	A: <span class="aText"></span>
+	<br>
+	B: <span class="bText"></span>
+	<br>
+	C: <span class="cText"></span>
+	
+	<hr>
+	
+	A + B = C
+	<br>
+	<span class="aText"></span>+<span class="bText"></span>=<span class="cText"></span>
+
+	<hr>
+
+	<div id="clickDiv" data-bind="clickHandler" >I am boud by click events.</div>
+	<br>
+	I am boud by input events. Try changing my value:
+	<input type="text" data-bind="keyupHandler" data-event="input">
+
+	<!-- scripts -->
+	<script type="text/javascript" src="./subjectObserver.js"></script>
+
+</body>
+</html>
