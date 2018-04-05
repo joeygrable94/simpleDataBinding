@@ -55,6 +55,9 @@ class Subject {
 	};
 	// notify watchers of any updates
 	notify(newData) {
+
+		console.log(newData);
+
 		// loop through data handlers
 		this.observers.forEach((observer) => {
 			// call observer f(x) on this & input data
@@ -82,7 +85,6 @@ class Subject {
 
 // OBSERVER
 class Observer {
-	// constructor
 	constructor(dependencies, handler) {
 		// initial value
 		let value = new Subject(handler());
@@ -138,11 +140,31 @@ function bindInputToNumber(element, subject) {
 	// OBSERVER CLASS
 	let h = new Subject(3);
 	let g = new Subject(5);
-	let funk = function() { return h.value + g.value; }
-	let k = new Observer([h,g], funk);
-	console.log(h.value);
-	console.log(g.value);
-	console.log(k.value);
+	let k = new Observer([h,g], function() {
+		return h.value + g.value;
+	});
+	console.log(h);
+	console.log(g);
+	console.log(k);
+	console.log("==============");
+
+
+
+	// SUBJECTS => Arrays
+	let testArray = [1,2,3];
+	let x = new Subject(testArray);
+	let y = new Subject([4,5]);
+	let z = new Observer([x, y], function() {
+		return x.value.concat(y.value);
+	});
+	// initial Array state
+	console.log(x);
+	console.log(y);
+	console.log(z);
+	// Array state changes
+	console.log(y.assess([6,7,8]));
+	// all subscribed Array's are automatically updated
+	console.log(z.value);
 
 
 
@@ -152,29 +174,14 @@ function bindInputToNumber(element, subject) {
 	let addValues = function() { return a.value + b.value; };
 	let c = new Observer([a,b], addValues);
 	// initial Subject state
-	console.log(a.value);
-	console.log(b.value);
-	console.log(c.value);
+	console.log(a);
+	console.log(b);
+	console.log(c);
 	// Subject state changes
 	a.assess(9);
 	// all subscribed Subject handlers are updated
 	console.log(c.value);
-
-
-
-	// SUBJECTS => Arrays
-	let testArray = [1,2,3];
-	let x = new Subject(testArray);
-	let y = new Subject([4,5]);
-	let z = new Observer([x, y], function() { return x.value.concat(y.value); });
-	// initial Array state
-	console.log(x.value);
-	console.log(y.value);
-	console.log(z.value);
-	// Array state changes
-	y.assess([6,7,8]);
-	// all subscribed Array's are automatically updated
-	console.log(z.value);
+	console.log("==============");
 
 
 
@@ -186,13 +193,14 @@ function bindInputToNumber(element, subject) {
 	let isSameUser = function() { return (u1.value.name === u2.value.name) ? "same user" : "different user"; };
 	let checkUser = new Observer([u1, u2], isSameUser);
 	// initial Obj state
-	console.log(u1.value);
-	console.log(u2.value);
+	console.log(u1);
+	console.log(u2);
 	console.log(checkUser.value);
 	// Obj state changes
 	u2.assess({name: "Jane"});
 	// all subscribed Obj are automatically updated
-	console.log(checkUser.value);
+	console.log(checkUser);
+	console.log("==============");
 
 
 
@@ -205,6 +213,8 @@ function bindInputToNumber(element, subject) {
 	aText.forEach((element, index) => { bindInputToNumber(element, a); });
 	bText.forEach((element, index) => { bindInputToNumber(element, b); });
 	cText.forEach((element, index) => { bindInputToNumber(element, c); });
+
+
 
 })();
 
