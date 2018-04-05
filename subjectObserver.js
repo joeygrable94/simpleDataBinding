@@ -1,7 +1,7 @@
 "use strict";
 /*
 
-SUBJECTS that Access and Notify OBSERVERS of any data changes
+SUBJECTS assess and notify OBSERVERS of any data changes
 
 
 Author:
@@ -21,28 +21,28 @@ SUBJECTS
 	- notifies observers when this subject's state changes
 OBSERVERS
 	- a function that can be invoked when Subject changes (i.e. event occurs)
-
  */
+
+
 
 
 
 // SUBJECT CLASS
 class Subject {
 	// constructor
-	constructor(value, scope=window) {
+	constructor(value, context) {
 		// provided scope or window
-		this.scope = scope;
+		this.context = context || window;
 		// data handlers | observers | watchers
 		this.observers = [];
-		// access data
-		this.value = this.access(value);
+		// assess data
+		this.value = this.assess(value);
 		// return subjects value
 		return this;
 	};
-	// access the value of the data
-	access(data) {
-		// TODO: implement a deep search to check if two objects or arrays are the same
-		//console.log("new data: ", data !== this.value);
+	// assess the value of the data
+	assess(data) {
+		// TODO: implement a deep search to check if two objects or arrays are the EXACT same??
 		// if a value provided and/or is different from the existing value
 		if (arguments.length && data !== this.value) {
 			// update the subject value
@@ -58,7 +58,7 @@ class Subject {
 		// loop through data handlers
 		this.observers.forEach((observer) => {
 			// call observer f(x) on this & input data
-			observer.call(this.scope, newData);
+			observer.call(this.context, newData);
 		});
 	};
 	// subscribe a function to watch data
@@ -78,48 +78,27 @@ class Subject {
 
 
 
-// OBSERVER CLASS
+
+
+// OBSERVER
 class Observer {
-	// construct event handler obj
-	constructor(start=false) {
-		// elements to bind
-		this.toBind = document.querySelectorAll("[data-bind]");
-		// obj containing all the event actions
-		this.observers = {
-			clickHandler: function(event) {
-				console.log("clicked", event);
-			},
-			keyupHandler: function(event) {
-				console.log("keyup", event);
-			}
-		};
-		// if initated
-		if (start) { this.init(); }
-		return this;
-	};
-	// bind event actions to DOM elements
-	bindEvents() {
-		// for each element
-		this.toBind.forEach((element, index) => {
-			// get variables
-			let eventElm = element,
-				observer = eventElm.getAttribute("data-bind"),
-				eventType = eventElm.getAttribute("data-event") || "click",
-				binded = eventElm.getAttribute("data-binded");
-			// chech for the event handlers in the observers obj
-			if (typeof this.observers[observer] !== undefined) {
-				// if not already bound
-				if (!binded) {
-					// bind event to element
-					eventElm.setAttribute("data-binded", "true");
-					eventElm.addEventListener(eventType, this.observers[observer]);
-				}
-			}
+	// constructor
+	constructor(dependencies, handler) {
+		// initial value
+		let value = new Subject(handler());
+		// register this handler for each dependency
+		let listener = () => value.assess(handler());
+		dependencies.forEach((dependency) => {
+			dependency.subscribe(listener);
 		});
+		// restrict from manually updating Observer value
+		let getter = () => value;
+		getter.subscribe = value.subscribe;
+		return getter();
 	};
-	// initiate event binding
-	init() { return this.bindEvents(); };
-};
+}
+
+
 
 
 
@@ -132,7 +111,7 @@ function bindInputToNumber(element, subject) {
 		element.innerHTML = initial;
 		subject.subscribe(() => { element.innerHTML = subject.value; });
 	} else {
-		// bind the subject to observer
+		// bind the subject to the element
 		element.value = initial;
 		subject.subscribe(() => { element.value = subject.value; });
 	}
@@ -143,60 +122,90 @@ function bindInputToNumber(element, subject) {
 	};
 	// listen to DOM changes
 	element.addEventListener("input", (event) => {
-		// access the converted value
+		// assess the converted value
 		let newValue = convert(event.target.value);
-		subject.access(newValue);
+		subject.assess(newValue);
 	});
 };
 
 
-
-// compute with dependencies
-function compute(dependencies, callHandler) {
-	// initial value
-	let value = new Subject(callHandler());
-	// register a listener for each dependency, that accesses the updated value
-	let listener = function() { return value.access(callHandler()); };
-	dependencies.forEach((dependency) => {
-		dependency.subscribe(listener);
-	});
-	// wrap the value to restrict users from manually updating the value
-	let getter = function() { return value; };
-	getter.subscribe = value.subscribe;
-	return getter();
-};
 
 
 
 // AUTO-RUN
 (function() {
 
-	// SUBJECTS
+	// OBSERVER CLASS
+	let h = new Subject(3);
+	let g = new Subject(5);
+	let funk = function() { return h.value + g.value; }
+	let k = new Observer([h,g], funk);
+	console.log(h.value);
+	console.log(g.value);
+	console.log(k.value);
+
+
+
+	// SUBJECTS => Numbers, Strings & Boolines
 	let a = new Subject(3);
 	let b = new Subject(2);
-	let c = compute([a, b], function() {
-		return a.value + b.value;
-	});
+	let addValues = function() { return a.value + b.value; };
+	let c = new Observer([a,b], addValues);
+	// initial Subject state
+	console.log(a.value);
+	console.log(b.value);
+	console.log(c.value);
+	// Subject state changes
+	a.assess(9);
+	// all subscribed Subject handlers are updated
+	console.log(c.value);
 
-	// OBSERVER
-	let observer = new Observer(true);
+
+
+	// SUBJECTS => Arrays
+	let testArray = [1,2,3];
+	let x = new Subject(testArray);
+	let y = new Subject([4,5]);
+	let z = new Observer([x, y], function() { return x.value.concat(y.value); });
+	// initial Array state
+	console.log(x.value);
+	console.log(y.value);
+	console.log(z.value);
+	// Array state changes
+	y.assess([6,7,8]);
+	// all subscribed Array's are automatically updated
+	console.log(z.value);
+
+
+
+	// SUBJECTS => Objects
+	let user1 = {name: "Jane"};
+	let user2 = {name: "Bob"};
+	let u1 = new Subject(user1);
+	let u2 = new Subject(user2);
+	let isSameUser = function() { return (u1.value.name === u2.value.name) ? "same user" : "different user"; };
+	let checkUser = new Observer([u1, u2], isSameUser);
+	// initial Obj state
+	console.log(u1.value);
+	console.log(u2.value);
+	console.log(checkUser.value);
+	// Obj state changes
+	u2.assess({name: "Jane"});
+	// all subscribed Obj are automatically updated
+	console.log(checkUser.value);
+
+
 
 	// VIEW | ACTIONS
 	// get DOM elements to bind
 	var aText = document.querySelectorAll(".aText");
 	var bText = document.querySelectorAll(".bText");
-	var cText = document.querySelectorAll(".cText");
-	
+	var cText = document.querySelectorAll(".cText");	
 	// bind SUBJECT values to DOM elements
-	aText.forEach((element, index) => {
-		bindInputToNumber(element, a);
-	});
-	bText.forEach((element, index) => {
-		bindInputToNumber(element, b);
-	});
-	cText.forEach((element, index) => {
-		bindInputToNumber(element, c);
-	});
-
+	aText.forEach((element, index) => { bindInputToNumber(element, a); });
+	bText.forEach((element, index) => { bindInputToNumber(element, b); });
+	cText.forEach((element, index) => { bindInputToNumber(element, c); });
 
 })();
+
+

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html  lang="en-us">
+<head>
+
+	<!-- meta -->
+	<title>Simple Data Binding</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="author" content="Joey Grable">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta name="copyright" content="copyright Joey Grable">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- responsive -->
+	<meta name="robots" content="noindex"><!-- no SEO -->
+
+	<!-- css 
+	<link rel="stylesheet" type="text/css" href="./">
+	-->
+
+</head>
+<body>
+
+	<button data-bind="clickHandler">I am Triggered Easily...</button>
+	I am boud by input events. Try changing my value:
+	<input type="text" data-bind="keyupHandler" data-event="input">
+	<button type="text" data-bind="hoverHandler" data-event="mouseenter|mouseleave">Hover over me to trigger event</button>
+
+	<!-- scripts -->
+	<script type="text/javascript" src="./eventer.js"></script>
+
+</body>
+</html>

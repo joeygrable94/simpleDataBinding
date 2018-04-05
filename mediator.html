@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html  lang="en-us">
+<head>
+
+	<!-- meta -->
+	<title>Simple Data Binding</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="author" content="Joey Grable">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta name="copyright" content="copyright Joey Grable">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- responsive -->
+	<meta name="robots" content="noindex"><!-- no SEO -->
+
+	<!-- css <link rel="stylesheet" type="text/css" href="./">-->
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+	<h1>Chat</h1>
+	<form id="chatForm">
+		<label for="fromBox">Your Name:</label>
+		<input id="fromBox" type="text"/>
+		<br />
+		<label for="toBox">Send to:</label>
+		<input id="toBox" type="text"/>
+		<br />
+		<label for="chatBox">Message:</label>
+		<input id="chatBox" type="text"/>
+		<button type="submit">Chat</button>
+	</form>
+
+	<div id="chatResult"></div>
+
+<!-- scripts -->
+<script type="text/javascript" src="./mediator.js"></script>
+
+</body>
+</html>
